@@ -10,21 +10,13 @@ class C_Game:
       def __init__ (self, Level):
             self.Level = Level
       
-      def set (self):
-            NSOut=[]
-            NS = [1,2,3,4]
-            L = (self.Level - 1)
-            L1 = L+4
-            if L > 0:
-                  for i  in range(L):
-                        N = i + 5
-                        NS.append(N)
-            for i  in range(L1):
-                 random.shuffle(NS)
-                 NSOut.append(NS[0])
-            self.Fishki = NSOut 
-            return self.Fishki 
 
+      def set (self):
+            #print(f'level = {self.Level}')
+            k =  4 + self.Level
+            Digt = [0,1,2,3,4,5,6,7,8,9]
+            self.Fishki = random.sample(Digt, k)
+            return self.Fishki 
 
 class gamers:
       name = 'Vasya'
@@ -43,20 +35,20 @@ def proverka (variant, otvet):
             if variant[i] == otvet[i]:
                   rez.append(2)
                   otvet.pop(i)
-                  otvet.insert(0, 0)
+                  otvet.insert(0, "x")
                   variant.pop(i)
-                  variant.insert(0, 0)
+                  variant.insert(0, "x")
       
                   #print (otvet, variant)
 
       for i in range(len(otvet)):
             
-            if (variant[i] in otvet) and (variant[i] != 0):
+            if (variant[i] in otvet) and (variant[i] != "x"):
                   rez.append(1)
                   otvet.remove(variant[i])
-                  otvet.insert(0, 0)
+                  otvet.insert(0, "x")
                   variant.pop(i)
-                  variant.insert(0, 0)
+                  variant.insert(0, "x")
                  # print ('-',  variant, otvet)
       return rez
 
@@ -73,7 +65,7 @@ def strlist (otvet):
 
 
 def provres (res, lvl):
-      lvl=lvl+3
+      lvl=lvl+4
      # print (res.count(2), lvl )
       if res.count(2) == lvl :
             return True
@@ -140,27 +132,27 @@ class DB:
         return str(z)  
 
 
-    def write_klava_variant(self, Id: int, Klava_Var: str):
-        ids = str(Id)
-        KV = Klava_Var
-        sqconn , mycursor = self.con()
+    # def write_klava_variant(self, Id: int, Klava_Var: str):
+    #     ids = str(Id)
+    #     KV = Klava_Var
+    #     sqconn , mycursor = self.con()
 
-        if self.read_klava_variant(Id) == 'No':
-            sql = f"INSERT INTO klava (id, Klava_Var) VALUES ({ids}, {KV})"
+    #     if self.read_klava_variant(Id) == 'No':
+    #         sql = f"INSERT INTO klava (id, Klava_Var) VALUES ({ids}, {KV})"
 
-            mycursor.execute(sql)
-            sqconn.commit()
+    #         mycursor.execute(sql)
+    #         sqconn.commit()
 
-        else:
+    #     else:
 
-            sql = f"UPDATE klava SET Klava_Var = {KV} WHERE id = {ids}" 
+    #         sql = f"UPDATE klava SET Klava_Var = {KV} WHERE id = {ids}" 
             
         
-            mycursor.execute(sql)
-            sqconn.commit()
+    #         mycursor.execute(sql)
+    #         sqconn.commit()
 
-        mycursor.close()
-        sqconn.close()
+    #     mycursor.close()
+    #     sqconn.close()
 
     def pole_from_b (self, base:str, pole:str , gde:str):
 
@@ -211,10 +203,9 @@ class DB:
         dats = str(data)
         les = str(level)
 
-        self.write_klava_variant(chatid, 0) 
-        
+                
         sql = f"INSERT INTO games (Gamer_ID, Start_Date_Time, Game_Level) VALUES ({ids}, {dats}, {les})"
-        print(sql)
+        #print(sql)
         mycursor.execute(sql)
         mydb.commit()
         Id = mycursor.lastrowid
@@ -223,24 +214,20 @@ class DB:
         N='1'
 
         Varik=''
-        for i in gam.Fishki:
-            Varik += str(i)
+        for i in gam.Fishki: Varik += str(i)
+      
+        ##################
+      
+                
+        if self.pole_from_b ('game', 'Now_Game', str(chatid)) == 'XPEH':
         
-        s = self.pole_from_b ('game', 'Now_Game', str(chatid)) 
-        
-        if s == 'XPEH':
-        
-            sql = f"INSERT INTO game (id, ChatId, Now_Game, Variant, Level, hod) VALUES ({Ids}, {ids}, {N}, {Varik}, {les}, 0)"
-            
-        
+            sql = f"INSERT INTO game (id, ChatId, Now_Game, Variant, Level, hod) VALUES ({Ids}, {ids}, {N}, '{Varik}', {les}, 0)"
             mycursor.execute(sql)
             mydb.commit()
             
             
         else:
-            sql = f"UPDATE game SET id = {Ids}, Now_Game = {N}, Variant = {Varik}, Level = {les}, hod = 0  WHERE ChatId = {ids}" 
-            
-        
+            sql = f"UPDATE game SET id = {Ids}, Now_Game = {N}, Variant = '{Varik}', Level = {les}, hod = 0  WHERE ChatId = {ids}"  
             mycursor.execute(sql)
             mydb.commit()
 
@@ -302,7 +289,7 @@ class DB:
     title = "{tit}", \
     language_code = "{lng_code}" \
     WHERE Player_Id = {ids}' 
-        print(sql)    
+        #print(sql)    
     
         mycursor.execute(sql)
         mydb.commit()
@@ -343,11 +330,11 @@ class DB:
         for x in myresult:
             z = x[0]
             lvl = x[1]
-
+        
         if len(inp)==len(z):
             tempA = list (strlist (z))
             tempB = list (implist)
-            print (tempB, tempA)
+            #print (tempB, tempA)
             res = proverka (tempB, tempA)
             if res == []: Vk = 'No'
             else:
@@ -375,3 +362,11 @@ class DB:
         
 
 
+if __name__=="__main__" :
+     ww = C_Game(1)
+     w2 = C_Game(2)
+     w3 = C_Game(3)
+
+     for i in range(5): print(ww.set())
+     for i in range(5): print(w2.set())
+     for i in range(5): print(w3.set())
